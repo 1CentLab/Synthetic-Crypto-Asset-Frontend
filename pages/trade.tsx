@@ -1,5 +1,6 @@
 import React, { useEffect, useState,useCallback } from 'react';
 import { Fee, MsgSend, MsgExecuteContract } from '@terra-money/terra.js';
+import CW20 from "../connecter/token"
 
 import {
     CreateTxFailed,
@@ -21,6 +22,7 @@ export default function Trade() {
   const [txError, setTxError] = useState<string | null>(null);
 
   const USD="terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech"
+  
   
     useEffect(() => {
       if (connectedWallet) {
@@ -46,59 +48,21 @@ export default function Trade() {
       }
     }, [connectedWallet, lcd]);
 
-    const proceed = useCallback(() => {
+    const proceed = useCallback(async() => {
         if (!connectedWallet) {
           return;
         }
+        let token = new CW20(lcd, connectedWallet);
+        let status = await token.transfer();
+        console.log("Hey i call use call back")
+        console.log(status)
     
-        if (connectedWallet.network.chainID.startsWith('columbus')) {
-          alert(`Please only execute this example on Testnet`);
-          return;
-        }
-    
-        setTxResult(null);
-        setTxError(null);
-    
-        connectedWallet
-          .post({
-            msgs: [
-              new MsgExecuteContract(connectedWallet.walletAddress, USD, {
-                  "transfer": {
-                      "recipient": "terra1u46xvk5vyq466j4ahk3awd7aj44gc4rzf4epxr",
-                      "amount": "10000"
-                  }
-              })
-              
-            ],
-          })
-          .then((nextTxResult: TxResult) => {
-            console.log(nextTxResult);
-            setTxResult(nextTxResult);
-          })
-          .catch((error: unknown) => {
-              console.log(error)
-            if (error instanceof UserDenied) {
-              setTxError('User Denied');
-            } else if (error instanceof CreateTxFailed) {
-              setTxError('Create Tx Failed: ' + error.message);
-            } else if (error instanceof TxFailed) {
-              setTxError('Tx Failed: ' + error.message);
-            } else if (error instanceof Timeout) {
-              setTxError('Timeout');
-            } else if (error instanceof TxUnspecifiedError) {
-              setTxError('Unspecified Error: ' + error.message);
-            } else {
-              setTxError(
-                'Unknown Error: ' +
-                  (error instanceof Error ? error.message : String(error)),
-              );
-            }
-          });
       }, [connectedWallet]);
     
   
     return (
       <div>
+          <h1>Helo</h1> 
       
         {bank && <pre>{bank}</pre>}
         {!connectedWallet && <p>Wallet not connected!</p>}
