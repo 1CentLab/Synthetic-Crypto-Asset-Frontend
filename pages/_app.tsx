@@ -1,7 +1,6 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "../styles/globals.css";
 
-
 import {
   getChainOptions,
   StaticWalletProvider,
