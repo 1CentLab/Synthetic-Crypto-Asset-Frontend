@@ -30,14 +30,20 @@ class Pair {
     
     //Execute 
     async add_liquid(caller: ConnectedWallet, amount0: string, amount1: string){
+        console.log({
+            "add_liquid": {
+                "amount0": amount0,
+                "amount1": amount1
+            }
+        })
         let result = await caller
           .post({
             msgs: [
               new MsgExecuteContract(caller.walletAddress, this.pair_addr, {
-                  "add_liquid": {
-                      "amount0": amount0,
-                      "amount1": amount1
-                  }
+                "add_liquid": {
+                    "amount0": amount0,
+                    "amount1": amount1
+                }
               })
               
             ],

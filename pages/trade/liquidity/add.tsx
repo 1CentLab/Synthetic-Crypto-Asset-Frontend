@@ -92,9 +92,37 @@ export default function AddLiquid() {
           }));
         console.log(liquidAmount)
       };
+    
+    
 
-    const addLiquid = useCallback(async(e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const approveTokens= useCallback(async()=>{
+      if (!connectedWallet) {
+        return;
+      }
+
+      sca.increaseAllowance(connectedWallet, tokenAddr.pair, liquidAmount.amount0.toString()).then((result:TxResult)=>{
+        setBalanceInfo((prevState)=>({
+          ...prevState,
+          "allowance0": prevState.allowance0 + liquidAmount.amount0 
+        }))
+        console.log(result);
+      }).catch((error:any)=>{alert(error.message)})
+
+      usd.increaseAllowance(connectedWallet, tokenAddr.pair, liquidAmount.amount1.toString()).then((result:TxResult)=>{
+        setBalanceInfo((prevState)=>({
+          ...prevState,
+          "allowance1": prevState.allowance1 + liquidAmount.amount1 
+        }))
+
+        console.log(result);
+      }).catch((error:any)=>{alert(error.message)})
+
+      
+
+    },[connectedWallet, liquidAmount, tokenAddr])
+
+    const addLiquid = useCallback(async() => {
+        console.log("re-render")
         if (!connectedWallet) {
           return;
         }
@@ -107,9 +135,9 @@ export default function AddLiquid() {
         pair.add_liquid(connectedWallet, liquidAmount.amount0.toString(), liquidAmount.amount1.toString()).then((result:TxResult)=> {
           console.log(result);
         }).catch((error:any)=>{
-          console.log(error);
+          alert(error.message);
         })
-      }, [connectedWallet]);
+      }, [connectedWallet, liquidAmount, tokenAddr]);
     
   
     return (
@@ -140,7 +168,7 @@ export default function AddLiquid() {
               </div>
             
               <div className="add-liquid-for w-full">
-                  <form onSubmit={addLiquid}>
+                  <div>
                       <div className='my-4'>
                         <div className='token-info flex justify-between items-center w-full'>  
                             <div>GOLD</div>
@@ -174,10 +202,18 @@ export default function AddLiquid() {
                         />
                       </div>
                       
-                      <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
-                          Add
+                      {liquidAmount.amount0 > balanceInfo.balance0 || liquidAmount.amount1 > balanceInfo.balance1 || liquidAmount.amount0 == 0 || liquidAmount.amount1 == 0 ? 
+                       <button type="submit" className="px-8 py-3 text-white bg-gray-300 rounded focus:outline-none w-full" disabled>
+                          Insufficent Balance
+                      </button> 
+                      : liquidAmount.amount0 > balanceInfo.allowance0 || liquidAmount.amount1 > balanceInfo.allowance1 ?
+                      <button onClick={approveTokens} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">
+                        Approve
                       </button>
-                  </form>
+                       :<button onClick={addLiquid} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+                        Add Liquidity
+                     </button>}
+                  </div>
               </div>
 
           

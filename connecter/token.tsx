@@ -69,13 +69,13 @@ class CW20 {
         return result;
     }
 
-    async increaseAllowance(connected_wallet:ConnectedWallet, recipient: string, amount: string) :Promise<any>{
+    async increaseAllowance(connected_wallet:ConnectedWallet, spender: string, amount: string) :Promise<any>{
       let result = await connected_wallet
         .post({
           msgs: [
             new MsgExecuteContract(connected_wallet.walletAddress, this.token_addr, {
                 "increase_allowance": {
-                    "recipient": recipient,
+                    "spender": spender,
                     "amount": amount
                 }
             })
