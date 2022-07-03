@@ -19,78 +19,104 @@ import {
 export default function AddLiquid() {
     const lcd = useLCDClient();
     const connectedWallet = useConnectedWallet();
-    let pair = new Pair(lcd, contract_addr['pair'])
+    let pair = new Pair(lcd, contract_addr['pair']);
+    let sca = new CW20(lcd, contract_addr['sca']);
+    let usd = new CW20(lcd, contract_addr['usd']);
 
-    const [bank, setBank] = useState<null | string>();
     const [txResult, setTxResult] = useState<TxResult | null>(null);
     const [txError, setTxError] = useState<string | null>(null);
-    
-    const [pairData, setPair] = useState({
-        "token0": "",
-        "token1": "",
+
+    let [tokenAddr, setTokenAddr] = useState({
+      "token0": contract_addr['sca'],
+      "token1": contract_addr['usd'],
+      "decimal0":contract_addr['sca_decimal'],
+      "decimal1": contract_addr['usd_decimal'],
+      "pair": contract_addr["pair"],
+    }) 
+
+    const [liquidAmount, setLiquidAmount] = useState({
         "amount0": 0,
         "amount1": 0
+    })
+
+    const [balanceInfo, setBalanceInfo] = useState({
+      "balance0": 0,
+      "balance1": 0,
+      "allowance0": 0,
+      "allowance1": 0
     })
 
     // HAndle when user reconnect 
     useEffect(() => {
       if (connectedWallet) {
          const fetching = async () => {
-            let data =await lcd.wasm.contractQuery(
-                "terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech",
-                {
-                    "balance": {
-                        "address": connectedWallet.walletAddress
-                    }
-                }
-            );
-            console.log(`Addr :${connectedWallet.walletAddress}`)
-            console.log(`Data ${JSON.stringify(data)}`)
-         }
-        // fetching()
+            let balance0 = sca.balanceOf(connectedWallet.walletAddress);
+            let balance1 = usd.balanceOf(connectedWallet.walletAddress);
+            let allowance1 = sca.allowance(connectedWallet.walletAddress, tokenAddr.pair);
+            let allowance2 = usd.allowance(connectedWallet.walletAddress, tokenAddr.pair);
 
-        lcd.bank.balance(connectedWallet.walletAddress).then(([coins]) => {
-          setBank(coins.toString());
-        });
+            Promise.all([balance0, balance1, allowance1, allowance2]).then((values)=> {
+              setBalanceInfo((prevState)=>({
+                ...prevState,
+                "balance0": parseInt(values[0].balance),
+                "balance1": parseInt(values[1].balance),
+                "allowance0": parseInt(values[2].allowance),
+                "allowance1": parseInt(values[3].allowance)
+              }))
+            })
+         }
+        fetching()
+
+        
       } else {
-        setBank(null);
       }
-    }, [connectedWallet, lcd]);
+    }, [connectedWallet, lcd, tokenAddr]);
 
    
     //todo: it is being called many time -> being delayed. Handle this issue
+    //todo: considering using memo for pair class
     const handleParam =  () => async (e: { target: { name: any; value: any; }; }) => {
         const name = e.target.name;
         const value = e.target.value * 10 ** 6; //todo: using bignumber here
 
-        //get reserves 
-        let reserves = await pair.get_reserves();
+        // let reserves = await pair.get_reserves();
+        
+        // //change parameter according to reserve 
+        // if (parseFloat(reserves.reserve0) != 0 && parseFloat(reserves.reserve1) != 0){
 
-        console.log(reserves.reserve0)
+        // }
 
-        setPair((prevState) => ({
+        setLiquidAmount((prevState) => ({
             ...prevState,
             [name]: value
           }));
-        
-        console.log(pair)
+        console.log(liquidAmount)
       };
 
-    const formSubmit = useCallback(async(e: React.FormEvent<HTMLFormElement>) => {
+    const addLiquid = useCallback(async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!connectedWallet) {
           return;
         }
-        let token = new CW20(lcd, connectedWallet);
-        token.transfer().then((nextTxResult: TxResult)=>{console.log(nextTxResult)}).catch((error:any)=>{console.log(error.message)})
+        console.log(liquidAmount)
+        if (liquidAmount.amount0 == 0 || liquidAmount.amount1 == 0){
+          alert("Invalid amount");
+          return;
+        }
+
+        pair.add_liquid(connectedWallet, liquidAmount.amount0.toString(), liquidAmount.amount1.toString()).then((result:TxResult)=> {
+          console.log(result);
+        }).catch((error:any)=>{
+          console.log(error);
+        })
       }, [connectedWallet]);
     
   
     return (
-      <div className='relative flex flex-wrap items-center justify-between px-2 py-3 mb-3 '>
+      <div className='relative flex flex-wrap items-center justify-between px-2 py-3 mb-3'>
         
-        <div className="container px-4 mx-auto flex items-center flex-col">
-          <div className="trade-header flex justify-between items-center">
+        <div className="container px-4  py-4 mx-auto flex items-center flex-col w-[50%] bg-slate-300">
+          <div className="trade-header flex items-center">
                 <Link href="/trade/swap">
                   <a
                     className="px-3 py-2 mx-2 flex items-center text-xs uppercase font-bold leading-snug hover:opacity-75 bg-slate-400"
@@ -107,52 +133,58 @@ export default function AddLiquid() {
                   </a>
                 </Link>
           </div>
-          <div className="trade-content my-5 flex flex-row justify-between">
-            <div className="trade-board">
+          <div className="trade-content my-5 flex flex-row justify-center w-[80%] bg-slate-50">
+            <div className="trade-board  w-[50%]">
               <div className="form-block my-2">
                     Add liquidity
               </div>
             
-            <div className="add-liquid-form">
-                <form onSubmit={formSubmit}>
-                    <div>
-                    <label>GOLD</label>
-                    <input
-                        type="number"
-                        name="amount0"
-                        step="0.01"
-                        required
-                        placeholder="Name"
-                        className="form-control"
-                        value={pairData.amount0 / (10**6)}
-                        onChange={handleParam()}
-                    />
-                    </div>
-                    <div>
-                    <label>USD</label>
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="amount1"
-                        required
-                        placeholder="Email"
-                        className="form-control"
-                        value={pairData.amount1 /(10**6)}
-                        onChange={handleParam()}
-                    />
-                    </div>
-                    
-                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Add
-                    </button>
-                </form>
-            </div>
+              <div className="add-liquid-for w-full">
+                  <form onSubmit={addLiquid}>
+                      <div className='my-4'>
+                        <div className='token-info flex justify-between items-center w-full'>  
+                            <div>GOLD</div>
+                            <div> Balance: {balanceInfo.balance0 / (10 ** tokenAddr.decimal0)}</div>
+                          </div>
+                        <input
+                            type="number"
+                            name="amount0"
+                            step="0.01"
+                            required
+                            placeholder="Name"
+                            className="form-control"
+                            value={liquidAmount.amount0 / (10**6)}
+                            onChange={handleParam()}
+                        />
+                      </div>
+                      <div className='my-4 w-full'>
+                        <div className='token-info flex justify-between items-center w-full'>  
+                          <div>USD</div>
+                          <div> Balance: {balanceInfo.balance1 / (10 ** tokenAddr.decimal1)}</div>
+                        </div>
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="amount1"
+                            required
+                            placeholder="Email"
+                            className="form-control"
+                            value={liquidAmount.amount1 /(10**6)}
+                            onChange={handleParam()}
+                        />
+                      </div>
+                      
+                      <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+                          Add
+                      </button>
+                  </form>
+              </div>
 
           
             </div>
            
            </div>
-         </div>
+        </div>
       </div>
     );
 }

@@ -2,6 +2,9 @@ import React, { useEffect, useState,useCallback } from 'react';
 import { Fee, MsgSend, MsgExecuteContract } from '@terra-money/terra.js';
 import { ConnectedWallet } from '@terra-money/wallet-types';
 import { LCDClient } from '@terra-money/terra.js';
+import { BalanceResponse, AllowanceResponse } from "../interface/token"
+
+
 import {
     CreateTxFailed,
     Timeout,
@@ -17,20 +20,47 @@ import {
 
 class CW20 {
     lcd: LCDClient;
-    connectedWallet: ConnectedWallet;
-    constructor(lcd :LCDClient, connected_wallet:ConnectedWallet){
+    token_addr: string;
+    constructor(lcd :LCDClient, tokenAddr: string){
         this.lcd = lcd;
-        this.connectedWallet = connected_wallet;
-    } 
+        this.token_addr = tokenAddr;
+    }   
 
-    async transfer() :Promise<any>{
-        let result = await this.connectedWallet
+    // query functions 
+    async allowance(owner: string, spender: string) : Promise<AllowanceResponse> {
+      let result = await this.lcd.wasm.contractQuery<AllowanceResponse>(
+          this.token_addr,
+          {
+              "allowance": {
+                "owner": owner,
+                "spender": spender
+              }
+          }
+      )
+      return result;
+    }
+
+    async balanceOf(address:string) :Promise<BalanceResponse> {
+      let result = await this.lcd.wasm.contractQuery<BalanceResponse>(
+          this.token_addr,
+          {
+              "balance": {
+                "address": address,
+              }
+          }
+      )
+      return result;
+    }
+
+
+    async transfer(connected_wallet:ConnectedWallet, recipient:string, amount: string) :Promise<any>{
+        let result = await connected_wallet
           .post({
             msgs: [
-              new MsgExecuteContract(this.connectedWallet.walletAddress, "terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech", {
+              new MsgExecuteContract(connected_wallet.walletAddress, this.token_addr, {
                   "transfer": {
-                      "recipient": "terra1u46xvk5vyq466j4ahk3awd7aj44gc4rzf4epxr",
-                      "amount": 10000
+                      "recipient": recipient,
+                      "amount": amount
                   }
               })
               
@@ -39,14 +69,14 @@ class CW20 {
         return result;
     }
 
-    async increaseAllowance() :Promise<any>{
-      let result = await this.connectedWallet
+    async increaseAllowance(connected_wallet:ConnectedWallet, recipient: string, amount: string) :Promise<any>{
+      let result = await connected_wallet
         .post({
           msgs: [
-            new MsgExecuteContract(this.connectedWallet.walletAddress, "terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech", {
+            new MsgExecuteContract(connected_wallet.walletAddress, this.token_addr, {
                 "increase_allowance": {
-                    "recipient": "terra1u46xvk5vyq466j4ahk3awd7aj44gc4rzf4epxr",
-                    "amount": 10000
+                    "recipient": recipient,
+                    "amount": amount
                 }
             })
             
