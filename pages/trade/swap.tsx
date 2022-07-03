@@ -1,6 +1,8 @@
 import React, { useEffect, useState,useCallback } from 'react';
 import { Fee, MsgSend, MsgExecuteContract } from '@terra-money/terra.js';
-import CW20 from "../connecter/token"
+import CW20 from "../../connecter/token"
+import Link from "next/link";
+
 
 import {
     CreateTxFailed,
@@ -20,9 +22,6 @@ export default function Trade() {
     const [bank, setBank] = useState<null | string>();
     const [txResult, setTxResult] = useState<TxResult | null>(null);
   const [txError, setTxError] = useState<string | null>(null);
-
-  const USD="terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech"
-  
   
     useEffect(() => {
       if (connectedWallet) {
@@ -48,7 +47,13 @@ export default function Trade() {
       }
     }, [connectedWallet, lcd]);
 
-    const proceed = useCallback(async() => {
+    const test = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      
+    }
+
+    const proceed = useCallback(async(e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault
         if (!connectedWallet) {
           return;
         }
@@ -58,18 +63,32 @@ export default function Trade() {
     
   
     return (
-      <div>
-        <h1 className="text-3xl font-bold underline">
-          Hello world!
-        </h1>
-
-        <div className="trade">
+      <div className='relative flex flex-wrap items-center justify-between px-2 py-3 mb-3 '>
+        
+        <div className="container px-4 mx-auto flex items-center flex-col">
           <div className="trade-header">
-              <p> Trade header</p>
+          <Link href="/trade/swap">
+                  <a
+                    className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug  hover:opacity-75"
+                  >
+                    <span className="ml-2">Swap</span>
+                  </a>
+                </Link>
+
+                <Link href="/trade/liquidity">
+                  <a
+                    className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug  hover:opacity-75"
+                  >
+                    <span className="ml-2">Liquidity</span>
+                  </a>
+                </Link>
           </div>
-          <div className="trade-content">
+          <div className="trade-content flex flex-row justify-between">
             <div className="trade-board">
-                <p>Trade board</p>
+              <div className="form-block">
+                
+              </div>
+          
             </div>
             <div className="trade-info">
                 <p>Trade info</p>

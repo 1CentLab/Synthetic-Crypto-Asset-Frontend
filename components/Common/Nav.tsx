@@ -41,7 +41,7 @@ const Nav = () => {
           >
             <ul className="flex flex-col lg:flex-row list-none lg:ml-auto">
               <li className="nav-item">
-                <Link href="/trade">
+                <Link href="/trade/swap">
                   <a
                     className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75"
                   >
