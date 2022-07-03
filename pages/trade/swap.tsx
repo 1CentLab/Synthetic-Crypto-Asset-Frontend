@@ -57,8 +57,8 @@ export default function Trade() {
         if (!connectedWallet) {
           return;
         }
-        let token = new CW20(lcd, connectedWallet);
-        token.transfer().then((nextTxResult: TxResult)=>{console.log(nextTxResult)}).catch((error:any)=>{console.log(error.message)})
+        // let token = new CW20(lcd, connectedWallet);
+        // token.transfer().then((nextTxResult: TxResult)=>{console.log(nextTxResult)}).catch((error:any)=>{console.log(error.message)})
       }, [connectedWallet]);
     
   
