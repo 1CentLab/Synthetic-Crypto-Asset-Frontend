@@ -53,51 +53,29 @@ export default function Trade() {
           return;
         }
         let token = new CW20(lcd, connectedWallet);
-        let status = await token.transfer();
-        console.log("Hey i call use call back")
-        console.log(status)
-    
+        token.transfer().then((nextTxResult: TxResult)=>{console.log(nextTxResult)}).catch((error:any)=>{console.log(error.message)})
       }, [connectedWallet]);
     
   
     return (
       <div>
-          <h1>Helo</h1> 
-      
-        {bank && <pre>{bank}</pre>}
-        {!connectedWallet && <p>Wallet not connected!</p>}
+        <h1 className="text-3xl font-bold underline">
+          Hello world!
+        </h1>
 
-        {connectedWallet?.availablePost && !txResult && !txError && (
-            <button onClick={proceed}>Send CW20</button>
-        )}
-        {txResult && (
-        <>
-          <pre>{JSON.stringify(txResult, null, 2)}</pre>
-          {connectedWallet && txResult && (
-            <div>
-            <a
-              href={`https://finder.terra.money/${connectedWallet.network.chainID}/tx/${txResult.result.txhash}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Open Tx Result in Terra Finder
-            </a>
+        <div className="trade">
+          <div className="trade-header">
+              <p> Trade header</p>
+          </div>
+          <div className="trade-content">
+            <div className="trade-board">
+                <p>Trade board</p>
             </div>
-          )}
-           {txError && <pre>{txError}</pre>}
-
-            {(!!txResult || !!txError) && (
-            <button
-                onClick={() => {
-                setTxResult(null);
-                setTxError(null);
-                }}
-            >
-                Clear result
-            </button>
-            )}
-        </>
-      )}
+            <div className="trade-info">
+                <p>Trade info</p>
+            </div>
+           </div>
+         </div>
       </div>
     );
 }

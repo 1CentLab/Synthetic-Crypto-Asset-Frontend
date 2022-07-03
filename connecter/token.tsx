@@ -30,7 +30,7 @@ class CW20 {
               new MsgExecuteContract(this.connectedWallet.walletAddress, "terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech", {
                   "transfer": {
                       "recipient": "terra1u46xvk5vyq466j4ahk3awd7aj44gc4rzf4epxr",
-                      "amount": "10000"
+                      "amount": 10000
                   }
               })
               
@@ -38,6 +38,22 @@ class CW20 {
           })
         return result;
     }
+
+    async increaseAllowance() :Promise<any>{
+      let result = await this.connectedWallet
+        .post({
+          msgs: [
+            new MsgExecuteContract(this.connectedWallet.walletAddress, "terra1x7cz2xjsp2dcppwm33325nl7epyp3cc0u2lf2dl20qynylupmq2qxcuech", {
+                "increase_allowance": {
+                    "recipient": "terra1u46xvk5vyq466j4ahk3awd7aj44gc4rzf4epxr",
+                    "amount": 10000
+                }
+            })
+            
+          ],
+        })
+      return result;
+  }
 }
 
 export default CW20
