@@ -1,6 +1,3 @@
-import "bootstrap/dist/css/bootstrap.css";
-import "../styles/globals.css";
-
 import {
   getChainOptions,
   StaticWalletProvider,
@@ -10,9 +7,10 @@ import {
 import { AppProps } from 'next/app';
 import Link from 'next/link';
 import React from 'react';
-import Connecter from "../components/Wallet/Connecter";
-import Nav from "../components/Common/Nav";
-
+import Connecter from '../components/Wallet/Connecter';
+import Nav from '../components/Common/Nav';
+import '../styles/_app.scss';
+import 'antd/dist/antd.css';
 export default function App({
   Component,
   defaultNetwork,
@@ -21,7 +19,7 @@ export default function App({
   const main = (
     <main>
       <header>
-        <Nav/>
+        <Nav />
       </header>
 
       <Component />
@@ -29,16 +27,11 @@ export default function App({
   );
 
   return typeof window !== 'undefined' ? (
-    <WalletProvider
-      defaultNetwork={defaultNetwork}
-      walletConnectChainIds={walletConnectChainIds}
-    >
+    <WalletProvider defaultNetwork={defaultNetwork} walletConnectChainIds={walletConnectChainIds}>
       {main}
     </WalletProvider>
   ) : (
-    <StaticWalletProvider defaultNetwork={defaultNetwork}>
-      {main}
-    </StaticWalletProvider>
+    <StaticWalletProvider defaultNetwork={defaultNetwork}>{main}</StaticWalletProvider>
   );
 }
 

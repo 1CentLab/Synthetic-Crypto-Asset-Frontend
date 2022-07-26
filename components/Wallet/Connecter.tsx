@@ -11,13 +11,11 @@ export default function Connecter() {
     availableConnections,
     supportFeatures,
     connect,
-    install,
     disconnect,
   } = useWallet();
 
-  console.log(availableConnectTypes)
   return (
-    <div style={{display:'flex', padding:0, margin:0, alignItems: "center", justifyContent:"center"}} >
+    <div style={{ display: 'flex', padding: 0, margin: 0, alignItems: 'center', justifyContent: 'center' }}>
       {status === WalletStatus.WALLET_NOT_CONNECTED && (
         <>
           {/* {availableInstallTypes.map((connectType) => (
@@ -41,27 +39,20 @@ export default function Connecter() {
           {availableConnections.map(
             ({ type, name, icon, identifier = '' }) => {
               return (
-                identifier == "station" ? <button
-                  key={'connection-' + type + identifier}
-                    onClick={() => connect(type, identifier)}
-                  >
-                  <img
-                    src={icon}
-                    alt={name}
-                    style={{ width: '1em', height: '1em' }}
-                  />
-                  {name} [{identifier}]
-                </button> : <div></div>
-              )
+                identifier == 'station' && (
+                  <button key={'connection-' + type + identifier} onClick={() => connect(type, identifier)}>
+                    <img src={icon} alt={name} style={{ width: '1em', height: '1em' }} />
+                    {name} [{identifier}]
+                  </button>
+                )
+              );
             }
-            
+
             // ),
           )}
         </>
       )}
-      {status === WalletStatus.WALLET_CONNECTED && (
-        <button onClick={() => disconnect()}>Disconnect</button>
-      )}
+      {status === WalletStatus.WALLET_CONNECTED && <button onClick={() => disconnect()}>Disconnect</button>}
     </div>
   );
 }
