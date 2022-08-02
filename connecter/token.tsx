@@ -14,6 +14,7 @@ import {
   useLCDClient,
   UserDenied,
 } from '@terra-money/wallet-provider';
+import BigNumber from 'bignumber.js';
 
 class CW20 {
   lcd: LCDClient;
@@ -63,7 +64,7 @@ class CW20 {
         new MsgExecuteContract(connected_wallet.walletAddress, this.token_addr, {
           increase_allowance: {
             spender: spender,
-            amount: amount,
+            amount: new BigNumber(amount).multipliedBy(10 ** 6).toString(),
           },
         }),
       ],

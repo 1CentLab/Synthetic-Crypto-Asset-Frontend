@@ -1,11 +1,11 @@
+@import './_mixin';
+@import './_common';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;800;900&display=swap');
 
-body {
-  background: aliceblue;
-  color: #fff;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  color: #333;
-}
+@import './_font';
+@import './_header-nav';
+@import './_trade';
+@import './components/_form-componet';
+@import './components/_sidebar-base';
