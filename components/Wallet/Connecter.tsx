@@ -1,6 +1,8 @@
 import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
+import { Button, Dropdown, Menu } from 'antd';
 import React from 'react';
-
+import { DownloadOutlined } from '@ant-design/icons';
+import { convertAddressToDisplayValue } from '../../utils';
 export default function Connecter() {
   const {
     status,
@@ -10,6 +12,7 @@ export default function Connecter() {
     availableInstallTypes,
     availableConnections,
     supportFeatures,
+
     connect,
     disconnect,
   } = useWallet();
@@ -40,10 +43,19 @@ export default function Connecter() {
             ({ type, name, icon, identifier = '' }) => {
               return (
                 identifier == 'station' && (
-                  <button key={'connection-' + type + identifier} onClick={() => connect(type, identifier)}>
-                    <img src={icon} alt={name} style={{ width: '1em', height: '1em' }} />
-                    {name} [{identifier}]
-                  </button>
+                  <Button
+                    shape="round"
+                    style={{
+                      backgroundColor: 'rgb(31, 199, 212)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                    }}
+                    key={'connection-' + type + identifier}
+                    onClick={() => connect(type, identifier)}
+                  >
+                    Connect Wallet
+                  </Button>
                 )
               );
             }
@@ -52,7 +64,32 @@ export default function Connecter() {
           )}
         </>
       )}
-      {status === WalletStatus.WALLET_CONNECTED && <button onClick={() => disconnect()}>Disconnect</button>}
+      {status === WalletStatus.WALLET_CONNECTED && (
+        <Dropdown
+          overlay={
+            <Menu
+              items={[
+                {
+                  key: '1',
+                  label: <button onClick={() => disconnect()}>Disconnect</button>,
+                },
+              ]}
+            ></Menu>
+          }
+        >
+          <Button
+            shape="round"
+            style={{
+              backgroundColor: 'rgb(31, 199, 212)',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+            }}
+          >
+            {convertAddressToDisplayValue(wallets[0].terraAddress)}
+          </Button>
+        </Dropdown>
+      )}
     </div>
   );
 }

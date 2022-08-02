@@ -6,16 +6,16 @@ type Props = {};
 const { TabPane } = Tabs;
 function TradeComponent({}: Props) {
   return (
-    <div className="trade-component container">
-      <div className="trade-wrapper">
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="BuyUStock" key="1">
+    <div className="trade-component h-screen bg-sky-100">
+      <div className="trade-wrapper container">
+        <Tabs defaultActiveKey="1" centered>
+          <TabPane tab="Swap" key="1">
             <BuyStock></BuyStock>
           </TabPane>
-          <TabPane tab="Tab 2" key="2">
+          <TabPane tab="Limit" key="2">
             Content of Tab Pane 2
           </TabPane>
-          <TabPane tab="Tab 3" key="3">
+          <TabPane tab="Liquidity" key="3">
             Content of Tab Pane 3
           </TabPane>
         </Tabs>

@@ -14,6 +14,10 @@ module.exports = {
         md: '728px',
         lg: '984px',
       },
+      colors: {
+        'btn-primary': 'rgb(31, 199, 212)',
+        red: 'red',
+      },
     },
   },
   plugins: [],

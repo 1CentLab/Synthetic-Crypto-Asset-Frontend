@@ -6,23 +6,33 @@ import {
 } from '@terra-money/wallet-provider';
 import { AppProps } from 'next/app';
 import Link from 'next/link';
-import React from 'react';
+import React, { createContext, useState } from 'react';
 import Connecter from '../components/Wallet/Connecter';
 import Nav from '../components/Common/Nav';
-import '../styles/_app.scss';
+
 import 'antd/dist/antd.css';
+import '../styles/_app.scss';
+import dynamic from 'next/dynamic';
+export const LoadingContext = createContext({});
+const ModalLoading = dynamic(() => import('../components/ModalLoading'), {
+  ssr: false,
+});
 export default function App({
   Component,
   defaultNetwork,
   walletConnectChainIds,
 }: AppProps & WalletControllerChainOptions) {
+  const [isLoading, setIsLoading] = useState(false);
   const main = (
     <main>
-      <header>
-        <Nav />
-      </header>
+      <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
+        <header>
+          <Nav />
+        </header>
 
-      <Component />
+        <Component />
+        <ModalLoading />
+      </LoadingContext.Provider>
     </main>
   );
 
