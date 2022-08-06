@@ -5,14 +5,13 @@ import {
   WalletProvider,
 } from '@terra-money/wallet-provider';
 import { AppProps } from 'next/app';
-import Link from 'next/link';
-import React, { createContext, useState } from 'react';
-import Connecter from '../components/Wallet/Connecter';
+import { createContext, useState } from 'react';
 import Nav from '../components/Common/Nav';
 
 import 'antd/dist/antd.css';
-import '../styles/_app.scss';
+import { Footer } from 'antd/lib/layout/layout';
 import dynamic from 'next/dynamic';
+import '../styles/_app.scss';
 export const LoadingContext = createContext({});
 const ModalLoading = dynamic(() => import('../components/ModalLoading'), {
   ssr: false,
@@ -32,6 +31,7 @@ export default function App({
 
         <Component />
         <ModalLoading />
+        <Footer style={{ textAlign: 'center' }}>SYNTHETIC CRYPTO ASSETS@2022 create by FreeGuys</Footer>
       </LoadingContext.Provider>
     </main>
   );

@@ -21,6 +21,7 @@ function BuyStock({}: Props) {
   const isNeedApprove = () => {
     return new BigNumber(sca);
   };
+
   const onSubmit = (data: any) => {
     console.log(data);
   };

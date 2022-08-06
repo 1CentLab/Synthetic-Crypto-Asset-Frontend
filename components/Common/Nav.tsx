@@ -1,6 +1,8 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import Link from 'next/link';
 import Connecter from '../Wallet/Connecter';
+import { Modal } from 'antd';
+import AuctiionModal from '../AuctionModal';
 
 // interface TitleProps {
 //   title: string;
@@ -8,6 +10,18 @@ import Connecter from '../Wallet/Connecter';
 
 const Nav = () => {
   const [navbarOpen, setNavbarOpen] = React.useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
   return (
     <>
       <nav className="app-header relative flex flex-wrap items-center justify-between px-2 py-3 mb-3">
@@ -41,9 +55,17 @@ const Nav = () => {
           >
             <ul className="flex flex-col lg:flex-row list-none lg:ml-auto items-center">
               <li className="nav-item px-4">
-                <Link href="/trade/swap">
+                <button
+                  onClick={showModal}
+                  className="text-base flex items-center uppercase font-bold leading-snug  hover:opacity-75"
+                >
+                  <span className="ml-2">Auctuion</span>
+                </button>
+              </li>
+              <li className="nav-item px-4">
+                <Link href="/swap">
                   <a className="text-base flex items-center uppercase font-bold leading-snug  hover:opacity-75">
-                    <span className="ml-2">Trade</span>
+                    <span className="ml-2">Swap</span>
                   </a>
                 </Link>
               </li>
@@ -63,6 +85,7 @@ const Nav = () => {
             </ul>
           </div>
         </div>
+        <AuctiionModal footer={false} visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}></AuctiionModal>
       </nav>
     </>
   );

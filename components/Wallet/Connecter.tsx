@@ -80,7 +80,7 @@ export default function Connecter() {
           <Button
             shape="round"
             style={{
-              backgroundColor: 'rgb(31, 199, 212)',
+              backgroundColor: '#42b883',
               color: 'white',
               fontSize: '16px',
               fontWeight: 'bold',

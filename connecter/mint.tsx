@@ -9,10 +9,10 @@ import BigNumber from 'bignumber.js';
 
 class Mint {
   lcd: LCDClient;
-  mint_address: string;
+  address: string;
   constructor(lcd: LCDClient) {
     this.lcd = lcd;
-    this.mint_address = MINT_CONTRACT_ADDR;
+    this.address = MINT_CONTRACT_ADDR;
   }
 
   // Query
@@ -23,13 +23,22 @@ class Mint {
 
     let result = await connectedWallet.post({
       msgs: [
-        new MsgExecuteContract(connectedWallet.walletAddress, this.mint_address, {
+        new MsgExecuteContract(connectedWallet.walletAddress, this.address, {
           open_position: {
             collateral_amount: collateralAmountConvertDecimal,
             ratio: ratioConvertDecimal,
           },
         }),
       ],
+    });
+    return result;
+  }
+
+  async get_open_position(user: string) {
+    let result = await this.lcd.wasm.contractQuery(this.address, {
+      get_position: {
+        user: user,
+      },
     });
     return result;
   }

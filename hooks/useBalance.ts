@@ -1,14 +1,22 @@
 import { LCDClient } from '@terra-money/terra.js';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
-import { CONTROLLER_CONTRACT_ADDR, PAIR_CONTRACT_ADDR, SCA_CONTRACT_ADDR, USD_CONTRACT_ADDR } from '../common/constant';
+import { useContext, useEffect, useState } from 'react';
+import {
+  CONTROLLER_CONTRACT_ADDR,
+  decimalScale,
+  PAIR_CONTRACT_ADDR,
+  SCA_CONTRACT_ADDR,
+  USD_CONTRACT_ADDR,
+} from '../common/constant';
 import Pair from '../connecter/pair';
 import CW20 from '../connecter/token';
+import { LoadingContext } from '../pages/_app';
 
-export const useBalance = ({ contractAllowcen }: any) => {
+export const useBalance = ({ contractAllowcen, contractToken }: any) => {
   const [balance, setBalance] = useState({ sca: '', usd: '', scaAllowed: '', usdAllowed: '' });
   const lcd = useLCDClient();
+  const { isLoading } = useContext(LoadingContext) as any;
   const connectedWallet = useConnectedWallet();
   console.log(balance);
   useEffect(() => {
@@ -27,11 +35,13 @@ export const useBalance = ({ contractAllowcen }: any) => {
             console.log(values);
             setBalance((prevState) => ({
               ...prevState,
-              sca: new BigNumber(values[0].balance).toString(),
-              usd: new BigNumber(values[1].balance).toString(),
-              scaAllowed: new BigNumber(values[2].allowance).toString(),
-              usdAllowed: new BigNumber(values[3].allowance).toString(),
+              sca: new BigNumber(values[0].balance).div(decimalScale).toString(),
+              usd: new BigNumber(values[1].balance).div(decimalScale).toString(),
+              scaAllowed: new BigNumber(values[2].allowance).div(decimalScale).toString(),
+              usdAllowed: new BigNumber(values[3].allowance).div(decimalScale).toString(),
             }));
+            if (contractToken === USD_CONTRACT_ADDR) {
+            }
           })
           .catch((error: any) => {
             console.log(error);
@@ -39,6 +49,6 @@ export const useBalance = ({ contractAllowcen }: any) => {
       };
       fetching();
     }
-  }, [connectedWallet, lcd]);
+  }, [connectedWallet, lcd, isLoading]);
   return { ...balance };
 };

@@ -6,7 +6,7 @@ type Props = {};
 const { TabPane } = Tabs;
 function TradeComponent({}: Props) {
   return (
-    <div className="trade-component h-screen bg-sky-100">
+    <div className="trade-component h-screen">
       <div className="trade-wrapper container">
         <Tabs defaultActiveKey="1" centered>
           <TabPane tab="Swap" key="1">

@@ -4,7 +4,7 @@ import { LoadingContext } from '../../pages/_app';
 import { LoadingOutlined } from '@ant-design/icons';
 const ModalLoading: React.FC = () => {
   const { isLoading, setIsLoading } = useContext(LoadingContext) as any;
-
+  console.log('isLoading', isLoading);
   return (
     <>
       <Modal footer={null} visible={isLoading} closable={false}>
