@@ -12,6 +12,7 @@ import 'antd/dist/antd.css';
 import { Footer } from 'antd/lib/layout/layout';
 import dynamic from 'next/dynamic';
 import '../styles/_app.scss';
+import HeaderPrice from '../components/HeaderPrice';
 export const LoadingContext = createContext({});
 const ModalLoading = dynamic(() => import('../components/ModalLoading'), {
   ssr: false,
@@ -28,7 +29,7 @@ export default function App({
         <header>
           <Nav />
         </header>
-
+        <HeaderPrice />
         <Component />
         <ModalLoading />
         <Footer style={{ textAlign: 'center' }}>SYNTHETIC CRYPTO ASSETS@2022 create by FreeGuys</Footer>

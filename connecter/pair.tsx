@@ -4,6 +4,8 @@ import { ConnectedWallet } from '@terra-money/wallet-types';
 import { LCDClient } from '@terra-money/terra.js';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import { ReserveResponse } from '../interface/pair';
+import BigNumber from 'bignumber.js';
+import { decimalScale } from '../common/constant';
 
 class Pair {
   lcd: LCDClient;
@@ -42,17 +44,18 @@ class Pair {
     return result;
   }
 
-  async swap(caller: ConnectedWallet, amount: string, addressToken: string, mainToken: string, secondToken: string) {
+  async swap(caller: ConnectedWallet, amount: string, mainToken: string, secondToken: string) {
     let result = await caller.post({
       msgs: [
         new MsgExecuteContract(caller.walletAddress, this.pair_addr, {
           swap: {
-            amount_in: amount,
+            amount_in: new BigNumber(amount).multipliedBy(decimalScale).toString(),
             path: [mainToken, secondToken],
           },
         }),
       ],
     });
+    return result;
   }
 }
 

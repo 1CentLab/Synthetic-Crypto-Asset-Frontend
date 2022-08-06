@@ -1,7 +1,7 @@
 import { LCDClient } from '@terra-money/terra.js';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import BigNumber from 'bignumber.js';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   CONTROLLER_CONTRACT_ADDR,
   decimalScale,
@@ -13,12 +13,13 @@ import Pair from '../connecter/pair';
 import CW20 from '../connecter/token';
 import { LoadingContext } from '../pages/_app';
 
-export const useBalance = ({ contractAllowcen, contractToken }: any) => {
+export const useBalance = ({ contractAllowcen }: any) => {
   const [balance, setBalance] = useState({ sca: '', usd: '', scaAllowed: '', usdAllowed: '' });
   const lcd = useLCDClient();
   const { isLoading } = useContext(LoadingContext) as any;
   const connectedWallet = useConnectedWallet();
-  console.log(balance);
+  const intervalRef = useRef<NodeJS.Timer>();
+  console.log(balance, 'thangphambalance');
   useEffect(() => {
     if (connectedWallet) {
       let sca = new CW20(lcd, SCA_CONTRACT_ADDR);
@@ -32,7 +33,7 @@ export const useBalance = ({ contractAllowcen, contractToken }: any) => {
 
         Promise.all([balance0, balance1, allowance1, allowance2])
           .then((values) => {
-            console.log(values);
+            console.log(values, 'thangphambalanceeffect');
             setBalance((prevState) => ({
               ...prevState,
               sca: new BigNumber(values[0].balance).div(decimalScale).toString(),
@@ -40,15 +41,17 @@ export const useBalance = ({ contractAllowcen, contractToken }: any) => {
               scaAllowed: new BigNumber(values[2].allowance).div(decimalScale).toString(),
               usdAllowed: new BigNumber(values[3].allowance).div(decimalScale).toString(),
             }));
-            if (contractToken === USD_CONTRACT_ADDR) {
-            }
           })
           .catch((error: any) => {
             console.log(error);
           });
       };
-      fetching();
+      let interval = setInterval(() => {
+        fetching();
+      }, 5000);
+      intervalRef.current = interval;
+      return () => clearInterval(interval);
     }
-  }, [connectedWallet, lcd, isLoading]);
+  }, [connectedWallet, lcd, isLoading, contractAllowcen]);
   return { ...balance };
 };

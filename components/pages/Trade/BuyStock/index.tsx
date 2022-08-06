@@ -1,20 +1,33 @@
 import { Button, Col, Divider, Row } from 'antd';
 import BigNumber from 'bignumber.js';
 import { Field, Form, Formik, FormikProps } from 'formik';
-import React, { useRef, useState } from 'react';
-import { PAIR_CONTRACT_ADDR, SCA_CONTRACT_ADDR, USD_CONTRACT_ADDR } from '../../../../common/constant';
+import React, { useContext, useRef, useState } from 'react';
+import {
+  MINT_CONTRACT_ADDR,
+  PAIR_CONTRACT_ADDR,
+  SCA_CONTRACT_ADDR,
+  USD_CONTRACT_ADDR,
+} from '../../../../common/constant';
 import Pair from '../../../../connecter/pair';
 import CW20 from '../../../../connecter/token';
 import { useBalance } from '../../../../hooks/useBalance';
 import useTrade from '../../../../pages/trade/hooks/useTrade';
 import { SwapOutlined } from '@ant-design/icons';
+import useToken from '../../../../hooks/useToken';
+import useReserve from '../../../../hooks/useReserve';
+import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
+import { LoadingContext } from '../../../../pages/_app';
 type Props = {};
-const exchangeRate = '0.2';
+
 function BuyStock({}: Props) {
   const formikRef = useRef<FormikProps<any>>(null);
-  const { sca = '', usd = '', scaAllowed = '', usdAllowed = '' } = useBalance(PAIR_CONTRACT_ADDR);
+  const { sca = '', usd = '', scaAllowed = '', usdAllowed = '' } = useBalance({ contractAllowcen: PAIR_CONTRACT_ADDR });
+  const exchangeRate = useReserve({});
+  console.log(exchangeRate, 'thangphamexchangerate');
+  const { setIsLoading } = useContext(LoadingContext) as any;
+  const connectedWallet = useConnectedWallet();
+  const lcd = useLCDClient();
   const [direction, setDirection] = useState({ main: USD_CONTRACT_ADDR, second: SCA_CONTRACT_ADDR });
-
   const exchangeRateDirection =
     direction?.main === USD_CONTRACT_ADDR ? exchangeRate : new BigNumber(1).dividedBy(exchangeRate).toString();
 
@@ -22,8 +35,31 @@ function BuyStock({}: Props) {
     return new BigNumber(sca);
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log(data);
+    setIsLoading(true);
+    try {
+      const { valueMain, ratio } = data;
+
+      const approve = new CW20(lcd, direction.main);
+      const pair = new Pair(lcd, PAIR_CONTRACT_ADDR);
+      if (!connectedWallet) {
+        return;
+      }
+      console.log('thangpham1234');
+      const result = await approve.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueMain);
+      console.log('thangpham1235');
+
+      const resultSwap = await pair.swap(connectedWallet, valueMain, direction.main, direction.second);
+      console.log(resultSwap, 'resultSwap');
+      setIsLoading(false);
+
+      alert('success');
+    } catch (error) {
+      alert('fail');
+      console.log(error, 'error');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,9 +84,16 @@ function BuyStock({}: Props) {
                 return (
                   <Form>
                     <div className="form-item flex flex-col">
-                      <label className="text-lg font-medium" htmlFor="valueMain">
-                        {direction.main === USD_CONTRACT_ADDR ? 'USD' : 'SCA'}
-                      </label>
+                      <div className="text-lg font-medium flex items-center justify-between">
+                        <div> {direction.main === USD_CONTRACT_ADDR ? 'sUSD' : 'sGOLD'}</div>
+                        <div className="text-xs">
+                          <div>
+                            {direction.main === USD_CONTRACT_ADDR ? 'sUSD' : 'sGOLD'} Balance:
+                            {direction.main === USD_CONTRACT_ADDR ? usd : sca}
+                          </div>
+                          <div>USD Allowed:{usdAllowed}</div>
+                        </div>
+                      </div>
                       <div className="input-wrapper">
                         <Field
                           type="text "
@@ -88,9 +131,16 @@ function BuyStock({}: Props) {
                       <SwapOutlined />{' '}
                     </button>
                     <div className="form-item">
-                      <label className="text-lg font-medium" htmlFor="valueSecond">
-                        {direction.second === SCA_CONTRACT_ADDR ? 'SCA' : 'USD'}
-                      </label>
+                      <div className="text-lg font-medium flex items-center justify-between">
+                        {direction.second === SCA_CONTRACT_ADDR ? 'sSCA' : 'sUSD'}{' '}
+                        <div className="text-xs">
+                          <div>
+                            {direction.second === USD_CONTRACT_ADDR ? 'sUSD' : 'sGOLD'} Balance:
+                            {direction.second === USD_CONTRACT_ADDR ? usd : sca}
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="input-wrapper">
                         {' '}
                         <Field

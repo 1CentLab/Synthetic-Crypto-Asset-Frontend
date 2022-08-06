@@ -21,17 +21,20 @@ function usePosition({}: Props) {
         try {
           const mint = new Mint(lcd);
           const result = await mint.get_open_position(walletAddress);
+          console.log(result, 'thangphamposition');
           if (!_.isEmpty(result)) {
             const initDeb = new BigNumber((result as any)?.initial_debt).div(decimalScale).toString();
             const entryPrice = new BigNumber((result as any)?.entry_price).div(decimalScale).toString();
             const initSize = new BigNumber((result as any)?.initial_size).div(decimalScale).toString();
             const deb = new BigNumber((result as any)?.debt).div(decimalScale).toString();
+            const size = new BigNumber((result as any)?.size).div(decimalScale).toString();
             const convertData = {
               ...(result as any),
               entry_price: entryPrice,
               initial_debt: initDeb,
               initial_size: initSize,
               debt: deb,
+              size,
             };
             setPosition(convertData);
           }
@@ -42,7 +45,7 @@ function usePosition({}: Props) {
 
       let interval = setInterval(() => {
         fetchData();
-      }, 5000);
+      }, 2000);
       intervalRef.current = interval;
     }
   }, [lcd, connectedWallet]);

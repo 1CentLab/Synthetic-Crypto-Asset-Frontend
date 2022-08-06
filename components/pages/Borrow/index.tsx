@@ -17,12 +17,14 @@ import useToken from '../../../hooks/useToken';
 import { LoadingContext } from '../../../pages/_app';
 import SliderBase from '../../SliderBase';
 import PositionList from './PositionList';
-
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 type Props = {};
 
 function BorrowComponent({}: Props) {
   const { sca = '', usd = '', scaAllowed = '', usdAllowed = '' } = useBalance({ contractAllowcen: MINT_CONTRACT_ADDR });
-  const exchangeRate = '0.2';
+
   const goldPrice = useToken({});
 
   const [direction, setDirection] = useState({ main: USD_CONTRACT_ADDR, second: SCA_CONTRACT_ADDR });
@@ -42,10 +44,14 @@ function BorrowComponent({}: Props) {
       if (!connectedWallet) {
         return;
       }
-      const result = await approve.increaseAllowance(connectedWallet, MINT_CONTRACT_ADDR, valueMain);
-      const resultMint = await mint.open_position(connectedWallet, valueMain, ratio);
+      await approve.increaseAllowance(connectedWallet, MINT_CONTRACT_ADDR, valueMain);
+      await sleep(3000);
+      await mint.open_position(connectedWallet, valueMain, ratio);
+
+      alert('success');
     } catch (error) {
       console.log(error);
+      alert('fail');
     } finally {
       setIsLoading(false);
     }
@@ -80,9 +86,9 @@ function BorrowComponent({}: Props) {
                     <div className="form-main px-6 h-full">
                       <div className="form-item flex flex-col">
                         <div className="text-lg font-medium flex items-center justify-between">
-                          <div> {direction.main === USD_CONTRACT_ADDR ? 'USD' : 'GOLD'}</div>
+                          <div> {direction.main === USD_CONTRACT_ADDR ? 'sUSD' : 'sGOLD'}</div>
                           <div className="text-xs">
-                            <div>USD Balance:{usd}</div> <div>USD Allowed:{usdAllowed}</div>
+                            <div>USD Balance: {usd}</div>
                           </div>
                         </div>
                         <div className="input-wrapper">
@@ -112,9 +118,9 @@ function BorrowComponent({}: Props) {
                       </div>{' '}
                       <div className="form-item mt-5">
                         <div className="text-lg font-medium flex items-center justify-between">
-                          <div> {direction.second === SCA_CONTRACT_ADDR ? 'GOLD' : 'USD'}</div>
+                          <div> {direction.second === SCA_CONTRACT_ADDR ? 'sGOLD' : 'sUSD'}</div>
                           <div className="text-xs">
-                            <div>GOLD Balance:{sca}</div> <div>GOLD Allowed:{scaAllowed}</div>
+                            <div>GOLD Balance: {sca}</div>
                           </div>
                         </div>
                         <div className="input-wrapper">
