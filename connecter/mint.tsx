@@ -4,7 +4,7 @@ import { ConnectedWallet } from '@terra-money/wallet-types';
 import { LCDClient } from '@terra-money/terra.js';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import { ReserveResponse } from '../interface/pair';
-import { MINT_CONTRACT_ADDR } from '../common/constant';
+import { decimalScale, MINT_CONTRACT_ADDR } from '../common/constant';
 import BigNumber from 'bignumber.js';
 
 class Mint {
@@ -41,6 +41,18 @@ class Mint {
       },
     });
     return result;
+  }
+
+  async close_position(connectedWallet: ConnectedWallet, amount: string) {
+    await connectedWallet.post({
+      msgs: [
+        new MsgExecuteContract(connectedWallet.walletAddress, this.address, {
+          close_position: {
+            sca_amount: new BigNumber(amount).multipliedBy(decimalScale).toString(),
+          },
+        }),
+      ],
+    });
   }
 }
 
