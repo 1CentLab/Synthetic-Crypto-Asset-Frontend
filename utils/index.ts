@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { toast } from 'react-toastify';
 
 export const convertAddressToDisplayValue = (address: string, lengthBeforeSlice = 9) => {
   if (address?.length < lengthBeforeSlice + 5) {
@@ -19,4 +20,28 @@ export const buyFlowStep = (dataInput: string, amountBalance: string, allowanceB
     return STATUS_BALANCE.Approve;
   }
   return STATUS_BALANCE.SUBMIT;
+};
+
+export const toastSucces = () => {
+  return toast.success('Success !!', {
+    position: 'top-center',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
+
+export const toastFail = () => {
+  toast.error('Fail !!', {
+    position: 'top-right',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
 };

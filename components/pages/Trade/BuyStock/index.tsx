@@ -17,13 +17,14 @@ import useToken from '../../../../hooks/useToken';
 import useReserve from '../../../../hooks/useReserve';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import { LoadingContext } from '../../../../pages/_app';
+import { toastFail, toastSucces } from '../../../../utils';
 type Props = {};
 
 function BuyStock({}: Props) {
   const formikRef = useRef<FormikProps<any>>(null);
   const { sca = '', usd = '', scaAllowed = '', usdAllowed = '' } = useBalance({ contractAllowcen: PAIR_CONTRACT_ADDR });
   const exchangeRate = useReserve({});
-  console.log(exchangeRate, 'thangphamexchangerate');
+
   const { setIsLoading } = useContext(LoadingContext) as any;
   const connectedWallet = useConnectedWallet();
   const lcd = useLCDClient();
@@ -52,9 +53,9 @@ function BuyStock({}: Props) {
       console.log(resultSwap, 'resultSwap');
       setIsLoading(false);
 
-      alert('success');
+      toastSucces();
     } catch (error) {
-      alert('fail');
+      toastFail;
       console.log(error, 'error');
       setIsLoading(false);
     }

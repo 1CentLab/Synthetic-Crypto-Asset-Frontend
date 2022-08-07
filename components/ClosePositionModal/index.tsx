@@ -11,7 +11,7 @@ import CW20 from '../../connecter/token';
 import { useBalance } from '../../hooks/useBalance';
 import useSystemDebt from '../../hooks/useSystemDebt';
 import { LoadingContext } from '../../pages/_app';
-import { buyFlowStep, STATUS_BALANCE } from '../../utils';
+import { buyFlowStep, STATUS_BALANCE, toastFail, toastSucces } from '../../utils';
 
 type Props = {};
 
@@ -29,11 +29,11 @@ function ClosePositionModal(props: any) {
         const SCA = new CW20(lcd, SCA_CONTRACT_ADDR);
         await SCA.increaseAllowance(connectedWallet, MINT_CONTRACT_ADDR, valueMain);
         setBuyFlow(STATUS_BALANCE.SUBMIT);
-        alert('success');
+        toastSucces();
+        setIsLoading(false);
       } catch (error) {
         console.log('error', error);
-        alert('fail');
-      } finally {
+        toastFail();
         setIsLoading(false);
       }
     }
@@ -44,11 +44,11 @@ function ClosePositionModal(props: any) {
       try {
         const mint = new Mint(lcd);
         await mint.close_position(connectedWallet, valueMain);
-        alert('success');
+        toastSucces();
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
-        alert('fail');
-      } finally {
+        toastFail();
         setIsLoading(false);
       }
     }
@@ -69,11 +69,12 @@ function ClosePositionModal(props: any) {
 
   return (
     <Modal
+      closable={true}
       title={<p style={{ color: '#286346', fontSize: 24 }}>Close Position</p>}
       footer={false}
       visible={visible}
-      onOk={onOk}
       onCancel={onCancel}
+      closeIcon={true}
     >
       <Formik
         initialValues={{

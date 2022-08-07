@@ -7,13 +7,16 @@ import {
 import { AppProps } from 'next/app';
 import { createContext, useState } from 'react';
 import Nav from '../components/Common/Nav';
-
+import 'react-toastify/dist/ReactToastify.css';
 import 'antd/dist/antd.css';
 import { Footer } from 'antd/lib/layout/layout';
 import dynamic from 'next/dynamic';
 import '../styles/_app.scss';
 import HeaderPrice from '../components/HeaderPrice';
+import { ToastContainer } from 'react-toastify';
+import Head from 'next/head';
 export const LoadingContext = createContext({});
+import favicon from '../public/favicon.png';
 const ModalLoading = dynamic(() => import('../components/ModalLoading'), {
   ssr: false,
 });
@@ -26,20 +29,33 @@ export default function App({
   const main = (
     <main>
       <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
+        <Head>
+          <link rel="shortcut icon" href="/static/favicon.png" />
+        </Head>
         <header>
           <Nav />
         </header>
-        <HeaderPrice />
         <Component />
         <ModalLoading />
         <Footer style={{ textAlign: 'center' }}>SYNTHETIC CRYPTO ASSETS@2022 create by FreeGuys</Footer>
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </LoadingContext.Provider>
     </main>
   );
 
   return typeof window !== 'undefined' ? (
     <WalletProvider defaultNetwork={defaultNetwork} walletConnectChainIds={walletConnectChainIds}>
-      {main}
+      {<>{main}</>}
     </WalletProvider>
   ) : (
     <StaticWalletProvider defaultNetwork={defaultNetwork}>{main}</StaticWalletProvider>

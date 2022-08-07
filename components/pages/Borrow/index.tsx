@@ -15,9 +15,11 @@ import { useBalance } from '../../../hooks/useBalance';
 import usePosition from '../../../hooks/usePosition';
 import useToken from '../../../hooks/useToken';
 import { LoadingContext } from '../../../pages/_app';
+import { toastFail, toastSucces } from '../../../utils';
 import SliderBase from '../../SliderBase';
 import PositionList from './PositionList';
-function sleep(ms: number) {
+
+export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 type Props = {};
@@ -47,13 +49,12 @@ function BorrowComponent({}: Props) {
       await approve.increaseAllowance(connectedWallet, MINT_CONTRACT_ADDR, valueMain);
       await sleep(3000);
       await mint.open_position(connectedWallet, valueMain, ratio);
-
-      alert('success');
+      toastSucces();
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
-      alert('fail');
-    } finally {
       setIsLoading(false);
+      toastFail();
     }
   };
 
@@ -73,14 +74,12 @@ function BorrowComponent({}: Props) {
           return (
             <div>
               {' '}
-              <Form className="flex w-full justify-center">
+              <Form className="flex w-full justify-center mt-16">
                 <div className="form-component w-100 mr-5 h-full">
                   <div className="bg-white rounded-3xl ">
                     <div className="px-6 pt-6">
                       <h2 className="text-xl font-bold">Borrow</h2>
-                      <p className="">
-                        Borrow newly minted uStocks by providing EURB as collateral and open a position
-                      </p>
+                      <p className="">Borrow newly minted SCA by providing sUSD as collateral and open a position </p>
                     </div>
                     <Divider />
                     <div className="form-main px-6 h-full">
@@ -106,7 +105,13 @@ function BorrowComponent({}: Props) {
 
                                 setFieldValue(
                                   'valueSecond',
-                                  new BigNumber(value).div(goldPrice).div(values['ratio']).multipliedBy(100).toString()
+                                  new BigNumber(value)
+                                    .div(goldPrice)
+                                    .div(values['ratio'])
+
+                                    .multipliedBy(100)
+                                    .decimalPlaces(6)
+                                    .toString()
                                 );
                               } else {
                                 setFieldValue(name, value.slice(0, -1));
@@ -145,7 +150,9 @@ function BorrowComponent({}: Props) {
                   <div className="bg-white rounded-3xl h-full">
                     <div className="px-6 pt-6">
                       <h2 className="text-xl font-bold">Set a Collateral Ratio</h2>
-                      <p className="">Position will be liquidated below the minimum. </p>
+                      <p className="">
+                        Position will be liquidated if collateral ratio drop below the minimum colateral ratio.{' '}
+                      </p>
                       <div className="my-10">
                         <SliderBase
                           name="ratio"
@@ -159,9 +166,7 @@ function BorrowComponent({}: Props) {
                           <div className="text-xs ">
                             <Badge.Ribbon text="150%">
                               <Card>
-                                {' '}
-                                Minimum collateral ratio. When the position drops below this value, any user may
-                                immediately liquidate the position.
+                                (Minimum collateral ratio) + 50%. Safe from market fluctuations. Hard to get liquidated.
                               </Card>
                             </Badge.Ribbon>
                           </div>
@@ -182,7 +187,9 @@ function BorrowComponent({}: Props) {
                   </div>
                 </div>
               </Form>
-              <div className="mx-auto container mt-10">
+              <div className="mx-auto container mt-10 text-center">
+                <Divider className="container" />
+
                 <PositionList />
               </div>
             </div>

@@ -4,7 +4,9 @@ import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import usePosition from '../../../../hooks/usePosition';
 import useToken from '../../../../hooks/useToken';
+import { toastSucces } from '../../../../utils';
 import ClosePositionModal from '../../../ClosePositionModal';
+// @ts-nocheck;
 
 type Props = {};
 export const DATA_INDEX = {
@@ -21,6 +23,7 @@ const DATA_SOURCE = [{}];
 
 const PositionList = (props: Props) => {
   const [isVisibleModal, setIsVisible] = useState(false);
+
   const showModal = () => {
     setIsVisible(true);
   };
@@ -31,6 +34,7 @@ const PositionList = (props: Props) => {
 
   const handleCancel = () => {
     setIsVisible(false);
+    console.log('closeModal');
   };
   const columnsInit = [
     {
@@ -115,28 +119,27 @@ const PositionList = (props: Props) => {
     {
       title: '',
       key: 'operation',
-      fixed: 'right',
-      width: 100,
+      align: 'center',
+      width: '15%',
       render: () => (
-        <button className="font-bold" onClick={showModal}>
-          Close position
+        <button className="text-center" onClick={showModal}>
+          <span className="font-bold text-[#b20000] opacity-70">Close position</span>
         </button>
       ),
     },
   ];
   const [dataSource, setDataSource] = useState(DATA_SOURCE);
+  const [isVisiblePosition, setIsVisiblePosition] = useState(true);
   const [columns, setColumns] = useState(columnsInit);
   const position = usePosition({});
   const goldPrice = useToken({});
-  console.log(position, dataSource, 'thangphamposition');
-  console.log(goldPrice, 'thangphangoldprice');
+
   useEffect(() => {
     if (!_.isEmpty(position)) {
       const { size = '0', debt = '0', is_liquidated } = position as any;
       if (size === '0') {
-        const temp = columnsInit.filter((item) => item.dataIndex !== DATA_INDEX.COLLATERAL_RATIO);
-        console.log(temp, 'temptemptemp');
-        setColumns(temp);
+        setIsVisiblePosition(false);
+        return;
       }
       const collateralRation = is_liquidated
         ? '0'
@@ -144,20 +147,21 @@ const PositionList = (props: Props) => {
       setDataSource([
         { ...position, [DATA_INDEX.GOLD_PRICE]: goldPrice, [DATA_INDEX.COLLATERAL_RATIO]: `${collateralRation} %` },
       ]);
+      setIsVisiblePosition(true);
     }
   }, [position, goldPrice]);
 
-  console.log(dataSource, 'thangpham00000');
   return (
     <>
-      <Table dataSource={dataSource} columns={columns} pagination={false} bordered></Table>
-      <ClosePositionModal
-        footer={false}
-        visible={isVisibleModal}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        position={position}
-      />
+      {isVisiblePosition && (
+        <>
+          {' '}
+          <h1 className="mb-4 text-xl font-bold text-[#42b883]">Positions</h1>
+          <Table dataSource={dataSource} columns={columns as any} pagination={false} bordered></Table>
+        </>
+      )}
+
+      <ClosePositionModal footer={false} visible={isVisibleModal} onCancel={handleCancel} position={position} />
     </>
   );
 };

@@ -17,23 +17,20 @@ import useToken from '../../../../hooks/useToken';
 import useReserve from '../../../../hooks/useReserve';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import { LoadingContext } from '../../../../pages/_app';
+import { sleep } from '../../Borrow';
+import { toastFail, toastSucces } from '../../../../utils';
 type Props = {};
 
 function Liquidity({}: Props) {
   const formikRef = useRef<FormikProps<any>>(null);
   const { sca = '', usd = '', scaAllowed = '', usdAllowed = '' } = useBalance({ contractAllowcen: PAIR_CONTRACT_ADDR });
   const exchangeRate = useReserve({});
-  console.log(exchangeRate, 'thangphamexchangerate');
   const { setIsLoading } = useContext(LoadingContext) as any;
   const connectedWallet = useConnectedWallet();
   const lcd = useLCDClient();
   const [direction, setDirection] = useState({ main: SCA_CONTRACT_ADDR, second: USD_CONTRACT_ADDR });
   const exchangeRateDirection =
     direction?.main === USD_CONTRACT_ADDR ? exchangeRate : new BigNumber(1).dividedBy(exchangeRate).toString();
-
-  const isNeedApprove = () => {
-    return new BigNumber(sca);
-  };
 
   const onSubmit = async (data: any) => {
     console.log(data);
@@ -47,16 +44,18 @@ function Liquidity({}: Props) {
       if (!connectedWallet) {
         return;
       }
-      console.log('thangpham1234');
+
       await mainToken.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueMain);
+      await sleep(3000);
       await secondTokene.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueSecond);
+      await sleep(3000);
       const resultSwap = await pair.add_liquid(connectedWallet, valueMain, valueSecond);
       console.log(resultSwap, 'resultSwap');
       setIsLoading(false);
 
-      alert('success');
+      toastSucces();
     } catch (error) {
-      alert('fail');
+      toastFail();
       console.log(error, 'error');
       setIsLoading(false);
     }
@@ -68,7 +67,7 @@ function Liquidity({}: Props) {
         <div className="bg-white rounded-3xl ">
           <div className="px-6 pt-6">
             <h2 className="text-xl text-center font-bold">Liquidity</h2>
-            <p className="text-center">Trade tokens in an instant</p>
+            <p className="text-center">Provide liquidity for pool</p>
           </div>
           <Divider />
           <div className="form-main px-6">
@@ -102,7 +101,7 @@ function Liquidity({}: Props) {
                           onChange={(e: any) => {
                             const { value, name } = e.target;
                             const reg = new RegExp(/^-?\d+\.?\d*$/);
-                            console.log(value);
+
                             if (reg.test(value)) {
                               setFieldValue(name, value);
 

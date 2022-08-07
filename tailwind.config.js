@@ -12,7 +12,7 @@ module.exports = {
       screens: {
         sm: '600px',
         md: '728px',
-        lg: '984px',
+        lg: '1000px',
       },
       colors: {
         'btn-primary': 'rgb(31, 199, 212)',

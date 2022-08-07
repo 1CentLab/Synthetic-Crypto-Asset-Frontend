@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Connecter from '../Wallet/Connecter';
 import { Modal } from 'antd';
 import AuctiionModal from '../AuctionModal';
+import HeaderPrice from '../HeaderPrice';
 
 // interface TitleProps {
 //   title: string;
@@ -24,18 +25,12 @@ const Nav = () => {
   };
   return (
     <>
-      <nav className="app-header relative flex flex-wrap items-center justify-between px-2 py-3 mb-3">
-        <div className="px-4 w-full flex flex-wrap items-center justify-between">
+      <nav className="app-header relative flex flex-wrap items-center justify-between px-2 py-3 mb-3 bg-slate-50 shadow-md">
+        <div className="px-4 w-full flex flex-wrap items-center justify-between ">
           <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
             <Link href="/">
               <a className="flex items-center text-base font-bold leading-relaxed mr-4 py-2 whitespace-nowrap uppercase ">
-                <img
-                  src="https://openseauserdata.com/files/d8217cc34fb75ed3acc0bc6a0aff7092.gif"
-                  alt="logo"
-                  width={40}
-                  height={40}
-                  className="rounded-full mr-3"
-                />
+                <img src="/static/favicon.png" alt="logo" width={50} height={50} className="rounded-full mr-3" />
                 Synthetic Crypto Assets
               </a>
             </Link>
@@ -53,13 +48,14 @@ const Nav = () => {
             className={'lg:flex flex-grow items-center h-full' + (navbarOpen ? ' flex' : ' hidden')}
             id="example-navbar-danger"
           >
+            <HeaderPrice />
             <ul className="flex flex-col lg:flex-row list-none lg:ml-auto items-center">
               <li className="nav-item px-4">
                 <button
                   onClick={showModal}
                   className="text-base flex items-center uppercase font-bold leading-snug  hover:opacity-75"
                 >
-                  <span className="ml-2">Auctuion</span>
+                  <span className="ml-2">Auction</span>
                 </button>
               </li>
               <li className="nav-item px-4">

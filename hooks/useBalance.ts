@@ -19,7 +19,6 @@ export const useBalance = ({ contractAllowcen }: any) => {
   const { isLoading } = useContext(LoadingContext) as any;
   const connectedWallet = useConnectedWallet();
   const intervalRef = useRef<NodeJS.Timer>();
-  console.log(balance, 'thangphambalance');
   useEffect(() => {
     if (connectedWallet) {
       let sca = new CW20(lcd, SCA_CONTRACT_ADDR);
@@ -33,7 +32,6 @@ export const useBalance = ({ contractAllowcen }: any) => {
 
         Promise.all([balance0, balance1, allowance1, allowance2])
           .then((values) => {
-            console.log(values, 'thangphambalanceeffect');
             setBalance((prevState) => ({
               ...prevState,
               sca: new BigNumber(values[0].balance).div(decimalScale).toString(),

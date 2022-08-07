@@ -10,7 +10,7 @@ import CW20 from '../../connecter/token';
 import { useBalance } from '../../hooks/useBalance';
 import useSystemDebt from '../../hooks/useSystemDebt';
 import { LoadingContext } from '../../pages/_app';
-import { buyFlowStep, STATUS_BALANCE } from '../../utils';
+import { buyFlowStep, STATUS_BALANCE, toastFail, toastSucces } from '../../utils';
 
 type Props = {};
 
@@ -33,13 +33,12 @@ function AuctiionModal(props: any) {
         const SCA = new CW20(lcd, SCA_CONTRACT_ADDR);
         await SCA.increaseAllowance(connectedWallet, CONTROLLER_CONTRACT_ADDR, valueMain);
         setBuyFlow(STATUS_BALANCE.SUBMIT);
-
-        alert('success');
+        setIsLoading(false);
+        toastSucces();
       } catch (error) {
         console.log('error', error);
-        alert('fail');
-      } finally {
         setIsLoading(false);
+        toastFail();
       }
     }
   };
@@ -49,12 +48,12 @@ function AuctiionModal(props: any) {
       try {
         const controller = new CONTROLLER(lcd);
         await controller.buy_auction(connectedWallet, valueMain);
-        alert('success');
-      } catch (error) {
-        console.log(error);
-        alert('fail');
-      } finally {
+        toastSucces();
         setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        toastFail();
       }
     }
   };
@@ -74,7 +73,13 @@ function AuctiionModal(props: any) {
 
   const { system_debt } = useSystemDebt({});
   return (
-    <Modal title="Auction" footer={false} visible={visible} onOk={onOk} onCancel={onCancel}>
+    <Modal
+      title={<p style={{ color: '#286346', fontSize: 24 }}>Auction</p>}
+      footer={false}
+      visible={visible}
+      onOk={onOk}
+      onCancel={onCancel}
+    >
       <Formik
         initialValues={{
           valueMain: '0',
@@ -90,9 +95,7 @@ function AuctiionModal(props: any) {
                     <div className="form-item flex flex-col">
                       <div className="text-lg font-medium flex items-center justify-between">
                         <div> Auction</div>
-                        <div>
-                          Balance:{sca}||{scaAllowed}
-                        </div>
+                        <div className="opacity-60 text-sm">Balance: {sca}</div>
                       </div>
                       <div className="input-wrapper">
                         <Field
@@ -109,7 +112,7 @@ function AuctiionModal(props: any) {
                         />
                       </div>
                     </div>{' '}
-                    <div>System deb: {system_debt}</div>
+                    <div>System debt: {system_debt}</div>
                     <Button className="button-submit" htmlType="submit" type="primary">
                       {buyFlow}
                     </Button>

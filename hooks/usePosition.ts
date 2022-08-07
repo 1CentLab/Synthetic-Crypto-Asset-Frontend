@@ -12,7 +12,6 @@ function usePosition({}: Props) {
   const [position, setPosition] = useState({});
   const connectedWallet = useConnectedWallet();
   const intervalRef = useRef<NodeJS.Timer>();
-  console.log(connectedWallet, 'thangpham1');
   const lcd = useLCDClient();
   useEffect(() => {
     if (connectedWallet) {
@@ -21,7 +20,6 @@ function usePosition({}: Props) {
         try {
           const mint = new Mint(lcd);
           const result = await mint.get_open_position(walletAddress);
-          console.log(result, 'thangphamposition');
           if (!_.isEmpty(result)) {
             const initDeb = new BigNumber((result as any)?.initial_debt).div(decimalScale).toString();
             const entryPrice = new BigNumber((result as any)?.entry_price).div(decimalScale).toString();

@@ -25,18 +25,12 @@ class Pair {
 
   //Execute
   async add_liquid(caller: ConnectedWallet, amount0: string, amount1: string) {
-    console.log('thangphamheloooooo', {
-      add_liquid: {
-        amount0: amount0,
-        amount1: amount1,
-      },
-    });
     let result = await caller.post({
       msgs: [
         new MsgExecuteContract(caller.walletAddress, this.pair_addr, {
           add_liquid: {
-            amount0: new BigNumber(amount0).multipliedBy(decimalScale).decimalPlaces(0, 1).toString(),
-            amount1: new BigNumber(amount1).multipliedBy(decimalScale).decimalPlaces(0, 1).toString(),
+            amount0: new BigNumber(amount0).multipliedBy(decimalScale).decimalPlaces(6).toString(),
+            amount1: new BigNumber(amount1).multipliedBy(decimalScale).decimalPlaces(6).toString(),
           },
         }),
       ],

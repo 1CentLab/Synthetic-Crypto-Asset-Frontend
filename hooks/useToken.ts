@@ -15,7 +15,6 @@ function useToken({}: Props) {
         const gold = new ORACLE(lcd);
         const result = await gold.get_price();
         const { multiplier, price } = result as any;
-        console.log(result, 'thangpham1');
         const priceGold = new BigNumber(price).div(multiplier).toString();
         setGold(priceGold);
       } catch (error) {
