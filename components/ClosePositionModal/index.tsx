@@ -28,6 +28,7 @@ function ClosePositionModal(props: any) {
       try {
         const SCA = new CW20(lcd, SCA_CONTRACT_ADDR);
         await SCA.increaseAllowance(connectedWallet, MINT_CONTRACT_ADDR, valueMain);
+        setBuyFlow(STATUS_BALANCE.SUBMIT);
         alert('success');
       } catch (error) {
         console.log('error', error);
@@ -66,7 +67,6 @@ function ClosePositionModal(props: any) {
     }
   };
 
-  const { system_debt } = useSystemDebt({});
   return (
     <Modal
       title={<p style={{ color: '#286346', fontSize: 24 }}>Close Position</p>}
@@ -109,6 +109,8 @@ function ClosePositionModal(props: any) {
                           className="flex mr-4 hover:cursor-pointer opacity-50 font-bold text-[#286346]"
                           onClick={() => {
                             setFieldValue('valueMain', position?.debt);
+                            const step = buyFlowStep(position?.debt, sca, scaAllowed);
+                            setBuyFlow(step);
                           }}
                         >
                           Max

@@ -64,7 +64,10 @@ class CW20 {
         new MsgExecuteContract(connected_wallet.walletAddress, this.token_addr, {
           increase_allowance: {
             spender: spender,
-            amount: new BigNumber(amount).multipliedBy(10 ** 6).toString(),
+            amount: new BigNumber(amount)
+              .multipliedBy(10 ** 6)
+              .decimalPlaces(0, 1)
+              .toString(),
           },
         }),
       ],

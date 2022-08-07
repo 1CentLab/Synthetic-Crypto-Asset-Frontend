@@ -19,7 +19,7 @@ import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import { LoadingContext } from '../../../../pages/_app';
 type Props = {};
 
-function BuyStock({}: Props) {
+function Liquidity({}: Props) {
   const formikRef = useRef<FormikProps<any>>(null);
   const { sca = '', usd = '', scaAllowed = '', usdAllowed = '' } = useBalance({ contractAllowcen: PAIR_CONTRACT_ADDR });
   const exchangeRate = useReserve({});
@@ -27,7 +27,7 @@ function BuyStock({}: Props) {
   const { setIsLoading } = useContext(LoadingContext) as any;
   const connectedWallet = useConnectedWallet();
   const lcd = useLCDClient();
-  const [direction, setDirection] = useState({ main: USD_CONTRACT_ADDR, second: SCA_CONTRACT_ADDR });
+  const [direction, setDirection] = useState({ main: SCA_CONTRACT_ADDR, second: USD_CONTRACT_ADDR });
   const exchangeRateDirection =
     direction?.main === USD_CONTRACT_ADDR ? exchangeRate : new BigNumber(1).dividedBy(exchangeRate).toString();
 
@@ -39,16 +39,18 @@ function BuyStock({}: Props) {
     console.log(data);
     setIsLoading(true);
     try {
-      const { valueMain, ratio } = data;
+      const { valueMain, valueSecond } = data;
 
-      const approve = new CW20(lcd, direction.main);
+      const mainToken = new CW20(lcd, direction.main);
+      const secondTokene = new CW20(lcd, direction.second);
       const pair = new Pair(lcd, PAIR_CONTRACT_ADDR);
       if (!connectedWallet) {
         return;
       }
-      const result = await approve.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueMain);
-
-      const resultSwap = await pair.swap(connectedWallet, valueMain, direction.main, direction.second);
+      console.log('thangpham1234');
+      await mainToken.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueMain);
+      await secondTokene.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueSecond);
+      const resultSwap = await pair.add_liquid(connectedWallet, valueMain, valueSecond);
       console.log(resultSwap, 'resultSwap');
       setIsLoading(false);
 
@@ -65,7 +67,7 @@ function BuyStock({}: Props) {
       <div className="form-component w-80 mx-auto">
         <div className="bg-white rounded-3xl ">
           <div className="px-6 pt-6">
-            <h2 className="text-xl text-center font-bold">Swap</h2>
+            <h2 className="text-xl text-center font-bold">Liquidity</h2>
             <p className="text-center">Trade tokens in an instant</p>
           </div>
           <Divider />
@@ -116,17 +118,6 @@ function BuyStock({}: Props) {
                         />
                       </div>
                     </div>{' '}
-                    <button
-                      type="button"
-                      className="button-swap"
-                      onClick={() => {
-                        setDirection({ ...direction, main: direction.second, second: direction.main });
-                        setFieldValue('valueMain', values['valueSecond']);
-                        setFieldValue('valueSecond', values['valueMain']);
-                      }}
-                    >
-                      <SwapOutlined />{' '}
-                    </button>
                     <div className="form-item">
                       <div className="text-lg font-medium flex items-center justify-between">
                         {direction.second === SCA_CONTRACT_ADDR ? 'sSCA' : 'sUSD'}{' '}
@@ -177,4 +168,4 @@ function BuyStock({}: Props) {
   );
 }
 
-export default BuyStock;
+export default Liquidity;

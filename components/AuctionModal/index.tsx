@@ -32,6 +32,8 @@ function AuctiionModal(props: any) {
       try {
         const SCA = new CW20(lcd, SCA_CONTRACT_ADDR);
         await SCA.increaseAllowance(connectedWallet, CONTROLLER_CONTRACT_ADDR, valueMain);
+        setBuyFlow(STATUS_BALANCE.SUBMIT);
+
         alert('success');
       } catch (error) {
         console.log('error', error);
