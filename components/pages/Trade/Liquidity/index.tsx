@@ -48,7 +48,7 @@ function Liquidity({}: Props) {
       await mainToken.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueMain);
       await sleep(3000);
       await secondTokene.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueSecond);
-      await sleep(3000);
+      await sleep(4000);
       const resultSwap = await pair.add_liquid(connectedWallet, valueMain, valueSecond);
       console.log(resultSwap, 'resultSwap');
       setIsLoading(false);
@@ -107,7 +107,7 @@ function Liquidity({}: Props) {
 
                               setFieldValue(
                                 'valueSecond',
-                                new BigNumber(value).multipliedBy(exchangeRateDirection).toString()
+                                new BigNumber(value).multipliedBy(exchangeRateDirection).decimalPlaces(6).toString()
                               );
                             } else {
                               setFieldValue(name, value.slice(0, -1));

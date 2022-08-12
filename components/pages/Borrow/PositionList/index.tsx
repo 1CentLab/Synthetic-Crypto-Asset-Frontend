@@ -1,4 +1,4 @@
-import { Table } from 'antd';
+import { Statistic, Table } from 'antd';
 import BigNumber from 'bignumber.js';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -6,8 +6,14 @@ import usePosition from '../../../../hooks/usePosition';
 import useToken from '../../../../hooks/useToken';
 import { toastSucces } from '../../../../utils';
 import ClosePositionModal from '../../../ClosePositionModal';
+import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 // @ts-nocheck;
-
+const { Countdown } = Statistic;
+const STATUS = {
+  INCREASE: 'increase',
+  EQUAL: 'equal',
+  DECREASE: 'decrease',
+};
 type Props = {};
 export const DATA_INDEX = {
   ENTRY_PRICE: 'entry_price',
@@ -20,6 +26,48 @@ export const DATA_INDEX = {
 };
 
 const DATA_SOURCE = [{}];
+
+const compare = (oldValue: any, newValue: any) => {
+  console.log(oldValue, newValue, 'oldValue, newValue');
+  if (!oldValue || !newValue) {
+    return STATUS.EQUAL;
+  }
+  if (new BigNumber(oldValue).isEqualTo(newValue)) {
+    return STATUS.EQUAL;
+  }
+  if (new BigNumber(oldValue).isLessThan(newValue)) {
+    return STATUS.INCREASE;
+  }
+  return STATUS.DECREASE;
+};
+
+const renderICon = (status: any) => {
+  console.log(status, 'renderICon');
+
+  switch (status) {
+    case STATUS.EQUAL:
+      return <></>;
+    case STATUS.DECREASE:
+      return <ArrowDownOutlined />;
+    case STATUS.INCREASE:
+      return <ArrowUpOutlined />;
+    default:
+      return <></>;
+  }
+};
+
+const pickColor = (status: any): string => {
+  switch (status) {
+    case STATUS.EQUAL:
+      return 'black';
+    case STATUS.DECREASE:
+      return '#cf1322';
+    case STATUS.INCREASE:
+      return '#3f8600';
+    default:
+      return 'black';
+  }
+};
 
 const PositionList = (props: Props) => {
   const [isVisibleModal, setIsVisible] = useState(false);
@@ -96,6 +144,18 @@ const PositionList = (props: Props) => {
       dataIndex: DATA_INDEX.COLLATERAL_AMOUT,
       key: '5',
       align: 'center',
+      render: (value: any, col: any) => {
+        return (
+          value && (
+            <Statistic
+              value={value}
+              precision={2}
+              valueStyle={{ color: pickColor(col[1]), fontSize: 14 }}
+              prefix={renderICon(col[1])}
+            />
+          )
+        );
+      },
     },
     {
       title: (
@@ -108,12 +168,39 @@ const PositionList = (props: Props) => {
       dataIndex: DATA_INDEX.DEBT,
       key: '6',
       align: 'center',
+      render: (value: any, col: any) => {
+        console.log(col, 'col');
+        return (
+          value && (
+            <Statistic
+              value={value}
+              precision={2}
+              valueStyle={{ color: pickColor(col[2]), fontSize: 14 }}
+              prefix={renderICon(col[2])}
+            />
+          )
+        );
+      },
     },
     {
       title: 'Collateral ratio',
       dataIndex: DATA_INDEX.COLLATERAL_RATIO,
       key: '7',
       align: 'center',
+      render: (value: any, col: any) => {
+        console.log(col, 'col');
+        return (
+          value && (
+            <Statistic
+              value={value}
+              precision={2}
+              valueStyle={{ color: pickColor(col[3]), fontSize: 14 }}
+              prefix={renderICon(col[3])}
+              suffix="%"
+            />
+          )
+        );
+      },
     },
 
     {
@@ -128,7 +215,7 @@ const PositionList = (props: Props) => {
       ),
     },
   ];
-  const [dataSource, setDataSource] = useState(DATA_SOURCE);
+  const [dataSource, setDataSource] = useState(DATA_SOURCE) as any;
   const [isVisiblePosition, setIsVisiblePosition] = useState(true);
   const [columns, setColumns] = useState(columnsInit);
   const position = usePosition({});
@@ -136,7 +223,7 @@ const PositionList = (props: Props) => {
 
   useEffect(() => {
     if (!_.isEmpty(position)) {
-      const { size = '0', debt = '0', is_liquidated } = position as any;
+      const { size = '0', debt = '0', is_liquidated, initial_size } = position as any;
       if (size === '0') {
         setIsVisiblePosition(false);
         return;
@@ -144,8 +231,16 @@ const PositionList = (props: Props) => {
       const collateralRation = is_liquidated
         ? '0'
         : new BigNumber(size).div(new BigNumber(debt).multipliedBy(goldPrice)).multipliedBy(100).toFixed(2).toString();
+      console.log(dataSource, 'dataSource');
       setDataSource([
-        { ...position, [DATA_INDEX.GOLD_PRICE]: goldPrice, [DATA_INDEX.COLLATERAL_RATIO]: `${collateralRation} %` },
+        {
+          ...position,
+          [DATA_INDEX.GOLD_PRICE]: goldPrice,
+          [DATA_INDEX.COLLATERAL_RATIO]: `${collateralRation}`,
+          1: compare(dataSource[0]?.initial_size, initial_size),
+          2: compare(dataSource[0]?.debt, debt),
+          3: compare(dataSource[0]?.COLLATERAL_RATIO, collateralRation),
+        },
       ]);
       setIsVisiblePosition(true);
     }
@@ -158,6 +253,7 @@ const PositionList = (props: Props) => {
           {' '}
           <h1 className="mb-4 text-xl font-bold text-[#42b883]">Positions</h1>
           <Table dataSource={dataSource} columns={columns as any} pagination={false} bordered></Table>
+          {/* <Countdown value={(position && (position as any)?.countDown) || 0}></Countdown> */}
         </>
       )}
 

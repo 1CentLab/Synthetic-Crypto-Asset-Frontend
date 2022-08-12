@@ -1,6 +1,7 @@
 import { useLCDClient } from '@terra-money/wallet-provider';
 import BigNumber from 'bignumber.js';
 import React, { useEffect, useRef, useState } from 'react';
+import { decimalScale } from '../common/constant';
 import CONTROLLER from '../connecter/controller';
 import ORACLE from '../connecter/oracle';
 
@@ -16,7 +17,7 @@ function useSystemDebt({}: Props) {
         const controller = new CONTROLLER(lcd);
         const result = await controller.get_asset_state();
         const { system_debt, reserve } = result as any;
-        setSystemDebt({ system_debt });
+        setSystemDebt({ system_debt: new BigNumber(system_debt).div(decimalScale).toString() });
       } catch (error) {
         console.log('error', error);
       }

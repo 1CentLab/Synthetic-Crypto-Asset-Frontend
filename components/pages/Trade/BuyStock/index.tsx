@@ -18,6 +18,7 @@ import useReserve from '../../../../hooks/useReserve';
 import { useConnectedWallet, useLCDClient } from '@terra-money/wallet-provider';
 import { LoadingContext } from '../../../../pages/_app';
 import { toastFail, toastSucces } from '../../../../utils';
+import { sleep } from '../../Borrow';
 type Props = {};
 
 function BuyStock({}: Props) {
@@ -48,7 +49,7 @@ function BuyStock({}: Props) {
         return;
       }
       const result = await approve.increaseAllowance(connectedWallet, PAIR_CONTRACT_ADDR, valueMain);
-
+      await sleep(2000);
       const resultSwap = await pair.swap(connectedWallet, valueMain, direction.main, direction.second);
       console.log(resultSwap, 'resultSwap');
       setIsLoading(false);
@@ -101,13 +102,13 @@ function BuyStock({}: Props) {
                           onChange={(e: any) => {
                             const { value, name } = e.target;
                             const reg = new RegExp(/^-?\d+\.?\d*$/);
-                            console.log(value);
+
                             if (reg.test(value)) {
                               setFieldValue(name, value);
 
                               setFieldValue(
                                 'valueSecond',
-                                new BigNumber(value).multipliedBy(exchangeRateDirection).toString()
+                                new BigNumber(value).multipliedBy(exchangeRateDirection).decimalPlaces(6).toString()
                               );
                             } else {
                               setFieldValue(name, value.slice(0, -1));

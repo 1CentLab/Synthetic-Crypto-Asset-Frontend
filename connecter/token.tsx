@@ -15,6 +15,7 @@ import {
   UserDenied,
 } from '@terra-money/wallet-provider';
 import BigNumber from 'bignumber.js';
+import { decimalScale } from '../common/constant';
 
 class CW20 {
   lcd: LCDClient;
@@ -65,8 +66,9 @@ class CW20 {
           increase_allowance: {
             spender: spender,
             amount: new BigNumber(amount)
-              .multipliedBy(10 ** 6)
-              .decimalPlaces(0, 1)
+              .decimalPlaces(6)
+              .multipliedBy(decimalScale)
+
               .toString(),
           },
         }),
