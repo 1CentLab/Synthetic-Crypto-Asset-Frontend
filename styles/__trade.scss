@@ -1,0 +1,14 @@
+.trade-component {
+  .ant-tabs-tab {
+    color: rgb(122, 110, 170);
+    font-size: 16px;
+    font-weight: 400;
+  }
+  .ant-tabs-tab-active {
+    .ant-tabs-tab-btn {
+      color: rgb(118, 69, 217);
+      font-weight: 600;
+      text-shadow: none;
+    }
+  }
+}

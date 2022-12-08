@@ -1,0 +1,37 @@
+.form-component {
+  @apply rounded-3xl z-10 border bg-gray-200 p-0.5 overflow-hidden;
+  .form-item {
+    .input-wrapper {
+      border-radius: 16px;
+      background-color: rgb(238, 234, 244);
+      box-shadow: rgb(74 74 104 / 10%) 0px 2px 2px -1px inset;
+      button,
+      input,
+      optgroup,
+      select,
+      textarea {
+        background-color: transparent;
+        padding: 0.75rem 1rem 1rem;
+        width: 100%;
+        &:focus-visible {
+          outline: none;
+        }
+      }
+    }
+  }
+  .form-main {
+    .button-swap {
+      @apply flex justify-center items-center p-2 my-4  m-auto rounded-full bg-gray-200;
+      &:hover {
+        @apply bg-gray-300;
+      }
+    }
+  }
+  .button-submit {
+    @apply my-5 w-full rounded-xl px-6 text-lg;
+    background-color: #42b883;
+    box-shadow: rgb(14 14 44 / 40%) 0px;
+    border: none;
+    height: 48px;
+  }
+}

@@ -1,0 +1,44 @@
+.sidebar-base {
+  position: relative;
+  .custom-slider {
+    .progress {
+      height: 100%;
+      align-items: center;
+      justify-content: start;
+      position: relative;
+      border-bottom-left-radius: inherit;
+      border-top-left-radius: inherit;
+      display: flex;
+      overflow: hidden;
+      line-height: 0;
+      font-size: 0.75rem;
+      background-color: #e9ecef;
+      border-radius: 0.25rem;
+
+      &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: '';
+        width: 100%;
+        height: 100%;
+        background-image: url('/public/volumne.png');
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+      }
+      &__red {
+        background: #f44336;
+        height: 15px;
+      }
+      &__yellow {
+        background: #f37021;
+        margin: 0 2px;
+        height: 15px;
+      }
+      &__blue {
+        background: #175ac7;
+        height: 15px;
+      }
+    }
+  }
+}

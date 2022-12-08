@@ -1,6 +1,8 @@
 import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
+import { Button, Dropdown, Menu } from 'antd';
 import React from 'react';
-
+import { DownloadOutlined } from '@ant-design/icons';
+import { convertAddressToDisplayValue } from '../../utils';
 export default function Connecter() {
   const {
     status,
@@ -10,14 +12,13 @@ export default function Connecter() {
     availableInstallTypes,
     availableConnections,
     supportFeatures,
+
     connect,
-    install,
     disconnect,
   } = useWallet();
 
-  console.log(availableConnectTypes)
   return (
-    <div style={{display:'flex', padding:0, margin:0, alignItems: "center", justifyContent:"center"}} >
+    <div style={{ display: 'flex', padding: 0, margin: 0, alignItems: 'center', justifyContent: 'center' }}>
       {status === WalletStatus.WALLET_NOT_CONNECTED && (
         <>
           {/* {availableInstallTypes.map((connectType) => (
@@ -41,26 +42,53 @@ export default function Connecter() {
           {availableConnections.map(
             ({ type, name, icon, identifier = '' }) => {
               return (
-                identifier == "station" ? <button
-                  key={'connection-' + type + identifier}
+                identifier == 'station' && (
+                  <Button
+                    shape="round"
+                    style={{
+                      backgroundColor: 'rgb(31, 199, 212)',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                    }}
+                    key={'connection-' + type + identifier}
                     onClick={() => connect(type, identifier)}
                   >
-                  <img
-                    src={icon}
-                    alt={name}
-                    style={{ width: '1em', height: '1em' }}
-                  />
-                  {name} [{identifier}]
-                </button> : <div></div>
-              )
+                    Connect Wallet
+                  </Button>
+                )
+              );
             }
-            
+
             // ),
           )}
         </>
       )}
       {status === WalletStatus.WALLET_CONNECTED && (
-        <button onClick={() => disconnect()}>Disconnect</button>
+        <Dropdown
+          overlay={
+            <Menu
+              items={[
+                {
+                  key: '1',
+                  label: <button onClick={() => disconnect()}>Disconnect</button>,
+                },
+              ]}
+            ></Menu>
+          }
+        >
+          <Button
+            shape="round"
+            style={{
+              backgroundColor: '#42b883',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+            }}
+          >
+            {convertAddressToDisplayValue(wallets[0].terraAddress)}
+          </Button>
+        </Dropdown>
       )}
     </div>
   );
