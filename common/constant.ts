@@ -1,9 +1,9 @@
-export const CONTROLLER_CONTRACT_ADDR = 'terra1gjs0nnqrpq8sc75u904k490sux0c2jdt6203lfrm9r587yvu4jhshqgqa2';
-export const MINT_CONTRACT_ADDR = 'terra12xs760tu6v3nxmug3mmr0pczaetds0s3yna0cj2hpyuyj3a3j8dsyhy0x8';
-export const SCA_CONTRACT_ADDR = 'terra1yn7aq220d2yntm6rmzkm2fdfnyttd7qw9y5e3rjj3wtrae8fvudstphknp';
-export const USD_CONTRACT_ADDR = 'terra1wppq09rprz8kk7q4rs9s7l3qfqazm27857t8zek396pkd42vkvsqppm87c';
-export const ORACLE_CONTRACT_ADDR = 'terra1mdc45aws0s9uq5wt09rlqqjyc9lea96dhxuflvdh52p0ae49chhqj5m0w8';
-export const PAIR_CONTRACT_ADDR = 'terra14jjpezl3cy2va833cgenvyl6kyxtfrkt2uq66gesnq2mn8uy6kusml0eep';
-export const LLP_CONTRACT_ADDR = 'terra1j8j088gmmvqqc0k8ud0g4j0h7te47xu7qcr7nr3qcje9hg8jelgsx6hs95';
+export const CONTROLLER_CONTRACT_ADDR = "terra17hcaqhlfmnfjwq6gk7uk56upqrvywvlp5hcmcpvqzpay76z5qjwqlm4j0x"
+export const MINT_CONTRACT_ADDR= "terra1sfe8pwz23z67p6tfkls333095le4cyh8ew0rtjpdxtjkt328ca2qmr7h8r"
+export const SCA_CONTRACT_ADDR= "terra19vhef06a5al5wmphftewu68j6knzl0z7mrsarvjlwan9r0qlthkqguc8fp"
+export const USD_CONTRACT_ADDR= "terra1l88e4y0k27y7ahn9fpm2sjcvl2j39h78cmsf8emsknrh5hmu6mvsavzp0w"
+export const ORACLE_CONTRACT_ADDR=  "terra1zcq0c8g3nuxpltpyxguvs5fherkm7nygm0dh04ql9d40spnyw0aqpekqkw"
+export const PAIR_CONTRACT_ADDR = "terra19mac7hz0nntj46ddj9yej7edejfww7vks0n808dxdtt7f9kfrmhss8ztwf"
+export const LLP_CONTRACT_ADDR = "terra1zmddkc7kv7ywz9hf9j87d4x0a7pqpgrcy5220280pcg4u6deklgs4ksl97"
 
 export const decimalScale = 10 ** 6;
